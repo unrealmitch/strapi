@@ -164,23 +164,25 @@ const reducer = (state = initialState, action) =>
       case actions.CHANGE_DYNAMIC_ZONE_COMPONENTS: {
         const { dynamicZoneTarget, newComponents } = action;
 
+        const dzParent = state.modifiedData.component ? 'component' : 'contentType';
+
         const dzAttributeIndex = findAttributeIndex(
-          state.modifiedData.contentType,
+          state.modifiedData[dzParent],
           dynamicZoneTarget
         );
 
         const currentDZComponents =
-          state.modifiedData.contentType.schema.attributes[dzAttributeIndex].components;
+          state.modifiedData[dzParent].schema.attributes[dzAttributeIndex].components;
 
         const updatedComponents = makeUnique([...currentDZComponents, ...newComponents]);
 
-        draftState.modifiedData.contentType.schema.attributes[
+        draftState.modifiedData[dzParent].schema.attributes[
           dzAttributeIndex
         ].components = updatedComponents;
 
         // Retrieve all the components that needs to be added to the modifiedData.components
         const nestedComponents = retrieveComponentsFromSchema(
-          current(draftState.modifiedData.contentType.schema.attributes),
+          current(draftState.modifiedData[dzParent].schema.attributes),
           state.components
         );
 

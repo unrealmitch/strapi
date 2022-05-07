@@ -26,7 +26,7 @@ const getAttributes = (dataTarget = '', targetUid, nestedComponents) => {
   }
 
   if (canAddComponentInAnotherComponent) {
-    return [defaultAttributes, ['component']];
+    return [defaultAttributes, ['component', 'dynamiczone']];
   }
 
   return [defaultAttributes];
