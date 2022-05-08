@@ -52,7 +52,7 @@ const reducer = (state, action) =>
         break;
       }
       case 'ADD_COMPONENT_TO_DYNAMIC_ZONE': {
-        draftState.modifiedDZName = action.join('.');
+        draftState.modifiedDZName = action.keys.join('.');
 
         if (action.shouldCheckErrors) {
           draftState.shouldCheckErrors = !state.shouldCheckErrors;

@@ -179,8 +179,10 @@ const EditView = ({
                                 return (
                                   <Grid gap={4} key={gridIndex}>
                                     {grid.map(
-                                      ({ fieldSchema, labelAction, metadatas, name, size }) => {
+                                      ({ fieldSchema, fieldName, labelAction, metadatas, name, size }) => {
                                         const isComponent = fieldSchema.type === 'component';
+                                        const isDynamicZone = fieldSchema.type === 'dynamiczone';
+                                        const keys = `${name}.${fieldName}`;
 
                                         if (isComponent) {
                                           const {
@@ -205,6 +207,18 @@ const EditView = ({
                                                 min={min}
                                                 name={name}
                                                 required={required}
+                                              />
+                                            </GridItem>
+                                          );
+                                        }
+
+                                        if (isDynamicZone) {
+                                          return (
+                                            <GridItem col={size} s={12} xs={12} key={fieldName}>
+                                              <DynamicZone
+                                                name={keys}
+                                                fieldSchema={fieldSchema}
+                                                metadatas={metadatas}
                                               />
                                             </GridItem>
                                           );

@@ -4,7 +4,7 @@ import isEqual from 'react-fast-compare';
 import PropTypes from 'prop-types';
 import { Stack } from '@strapi/design-system/Stack';
 import { Box } from '@strapi/design-system/Box';
-import { NotAllowedInput, useNotification } from '@strapi/helper-plugin';
+import { useNotification } from '@strapi/helper-plugin';
 import { getTrad } from '../../utils';
 import connect from './utils/connect';
 import select from './utils/select';
@@ -24,9 +24,9 @@ const DynamicZone = ({
   // Passed with the select function
   addComponentToDynamicZone,
   formErrors,
-  isCreatingEntry,
-  isFieldAllowed,
-  isFieldReadable,
+  // isCreatingEntry,
+  // isFieldAllowed,
+  // isFieldReadable,
   labelAction,
   moveComponentUp,
   moveComponentDown,
@@ -159,27 +159,27 @@ const DynamicZone = ({
     removeComponentFromDynamicZone(name, currentIndex);
   };
 
-  if (!isFieldAllowed && isCreatingEntry) {
-    return (
-      <NotAllowedInput
-        description={intlDescription}
-        intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
-        labelAction={labelAction}
-        name={name}
-      />
-    );
-  }
+  // if (!isFieldAllowed && isCreatingEntry) {
+  //   return (
+  //     <NotAllowedInput
+  //       description={intlDescription}
+  //       intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
+  //       labelAction={labelAction}
+  //       name={name}
+  //     />
+  //   );
+  // }
 
-  if (!isFieldAllowed && !isFieldReadable && !isCreatingEntry) {
-    return (
-      <NotAllowedInput
-        description={intlDescription}
-        intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
-        labelAction={labelAction}
-        name={name}
-      />
-    );
-  }
+  // if (!isFieldAllowed && !isFieldReadable && !isCreatingEntry) {
+  //   return (
+  //     <NotAllowedInput
+  //       description={intlDescription}
+  //       intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
+  //       labelAction={labelAction}
+  //       name={name}
+  //     />
+  //   );
+  // }
 
   return (
     <Stack spacing={6}>
@@ -195,10 +195,9 @@ const DynamicZone = ({
           />
           {dynamicDisplayedComponents.map((componentUid, index) => {
             const showDownIcon =
-              isFieldAllowed &&
               dynamicDisplayedComponentsLength > 0 &&
               index < dynamicDisplayedComponentsLength - 1;
-            const showUpIcon = isFieldAllowed && dynamicDisplayedComponentsLength > 0 && index > 0;
+            const showUpIcon =  dynamicDisplayedComponentsLength > 0 && index > 0;
             const isOpen = componentCollapses[index]?.isOpen || false;
 
             return (
@@ -208,7 +207,7 @@ const DynamicZone = ({
                 key={index}
                 index={index}
                 isOpen={isOpen}
-                isFieldAllowed={isFieldAllowed}
+                isFieldAllowed
                 moveComponentDown={handleMoveComponentDown}
                 moveComponentUp={handleMoveComponentUp}
                 onToggle={handleToggleComponent}
@@ -226,7 +225,6 @@ const DynamicZone = ({
         hasError={hasError}
         hasMaxError={hasMaxError}
         hasMinError={hasMinError}
-        isDisabled={!isFieldAllowed}
         label={metadatas.label}
         missingComponentNumber={missingComponentNumber}
         isOpen={isOpen}
@@ -261,9 +259,9 @@ DynamicZone.propTypes = {
     required: PropTypes.bool,
   }),
   formErrors: PropTypes.object.isRequired,
-  isCreatingEntry: PropTypes.bool.isRequired,
+  // isCreatingEntry: PropTypes.bool.isRequired,
   isFieldAllowed: PropTypes.bool.isRequired,
-  isFieldReadable: PropTypes.bool.isRequired,
+  // isFieldReadable: PropTypes.bool.isRequired,
   labelAction: PropTypes.element,
   metadatas: PropTypes.shape({
     description: PropTypes.string,
