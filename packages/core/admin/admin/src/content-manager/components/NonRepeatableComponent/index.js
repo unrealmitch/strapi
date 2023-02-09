@@ -8,6 +8,7 @@ import { Grid, GridItem } from '@strapi/design-system/Grid';
 import { Stack } from '@strapi/design-system/Stack';
 import { useContentTypeLayout } from '../../hooks';
 import FieldComponent from '../FieldComponent';
+import DynamicZone from '../DynamicZone';
 import Inputs from '../Inputs';
 import useLazyComponents from '../../hooks/useLazyComponents';
 
@@ -35,8 +36,9 @@ const NonRepeatableComponent = ({ componentUid, isFromDynamicZone, isNested, nam
         {fields.map((fieldRow, key) => {
           return (
             <Grid gap={4} key={key}>
-              {fieldRow.map(({ name: fieldName, size, metadatas, fieldSchema, queryInfos }) => {
+              {fieldRow.map(({ name: fieldName, size, metadatas, fieldSchema, labelAction, queryInfos }) => {
                 const isComponent = fieldSchema.type === 'component';
+                const isDynamicZone = fieldSchema.type === 'dynamiczone';
                 const keys = `${name}.${fieldName}`;
 
                 if (isComponent) {
@@ -46,6 +48,7 @@ const NonRepeatableComponent = ({ componentUid, isFromDynamicZone, isNested, nam
                     <GridItem col={size} s={12} xs={12} key={fieldName}>
                       <FieldComponent
                         componentUid={compoUid}
+                        labelAction={labelAction}
                         intlLabel={{
                           id: metadatas.label,
                           defaultMessage: metadatas.label,
@@ -56,6 +59,19 @@ const NonRepeatableComponent = ({ componentUid, isFromDynamicZone, isNested, nam
                         min={fieldSchema.min}
                         name={keys}
                         required={fieldSchema.required || false}
+                      />
+                    </GridItem>
+                  );
+                }
+
+                if (isDynamicZone) {
+                  return (
+                    <GridItem col={size} s={12} xs={12} key={fieldName}>
+                      <DynamicZone
+                        name={keys}
+                        labelAction={labelAction}
+                        fieldSchema={fieldSchema}
+                        metadatas={metadatas}
                       />
                     </GridItem>
                   );

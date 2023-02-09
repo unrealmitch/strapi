@@ -80,7 +80,7 @@ const reducer = (state, action) =>
         }
 
         if (action.type === 'ADD_COMPONENT_TO_DYNAMIC_ZONE') {
-          draftState.modifiedDZName = keys[0];
+          draftState.modifiedDZName = keys.join('.');;
         }
 
         const currentValue = get(state, ['modifiedData', ...keys], []);
@@ -319,14 +319,11 @@ const reducer = (state, action) =>
         if (shouldCheckErrors) {
           draftState.shouldCheckErrors = !state.shouldCheckErrors;
         }
-
-        const currentValue = state.modifiedData[dynamicZoneName];
+        const currentValue = get(state.modifiedData, dynamicZoneName);
         const nextIndex = action.type === 'MOVE_COMPONENT_UP' ? currentIndex - 1 : currentIndex + 1;
-        const valueToInsert = state.modifiedData[dynamicZoneName][currentIndex];
+        const valueToInsert = get(state.modifiedData, dynamicZoneName)[currentIndex];
         const updatedValue = moveFields(currentValue, currentIndex, nextIndex, valueToInsert);
-
-        set(draftState, ['modifiedData', action.dynamicZoneName], updatedValue);
-
+        set(draftState.modifiedData, action.dynamicZoneName, updatedValue);
         break;
       }
       case 'MOVE_FIELD': {
@@ -374,8 +371,8 @@ const reducer = (state, action) =>
         if (action.shouldCheckErrors) {
           draftState.shouldCheckErrors = !state.shouldCheckErrors;
         }
-
-        draftState.modifiedData[action.dynamicZoneName].splice(action.index, 1);
+        get(draftState.modifiedData, action.dynamicZoneName).splice(action.index, 1);
+        // draftState.modifiedData[action.dynamicZoneName].splice(action.index, 1);
 
         break;
       }

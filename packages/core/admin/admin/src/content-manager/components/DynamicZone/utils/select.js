@@ -17,7 +17,7 @@ function useSelect(name) {
 
   const dynamicDisplayedComponents = useMemo(
     () =>
-      get(modifiedData, [name], []).map((data) => {
+      get(modifiedData, name, []).map((data) => {
         return {
           componentUid: data.__component,
           id: data.id ?? data.__temp_key__,
@@ -26,16 +26,27 @@ function useSelect(name) {
     [modifiedData, name]
   );
 
+  const contains = (items, name) => {
+    const parts = name.split('.');
+    const canonicalName = parts
+      .filter(part => {
+        return Number.isNaN(part) || Number.isNaN(parseFloat(part));
+      })
+      .join('.');
+
+    return items.includes(canonicalName);
+  };
+
   const isFieldAllowed = useMemo(() => {
     const allowedFields = isCreatingEntry ? createActionAllowedFields : updateActionAllowedFields;
 
-    return allowedFields.includes(name);
+    return contains(allowedFields, name);
   }, [name, isCreatingEntry, createActionAllowedFields, updateActionAllowedFields]);
 
   const isFieldReadable = useMemo(() => {
     const allowedFields = isCreatingEntry ? [] : readActionAllowedFields;
 
-    return allowedFields.includes(name);
+    return contains(allowedFields, name);
   }, [name, isCreatingEntry, readActionAllowedFields]);
 
   return {

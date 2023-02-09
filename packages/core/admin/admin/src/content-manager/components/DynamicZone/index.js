@@ -199,7 +199,7 @@ const DynamicZone = ({
                 formErrors={formErrors}
                 key={`${componentUid}-${id}`}
                 index={index}
-                isFieldAllowed={isFieldAllowed}
+                isFieldAllowed
                 name={name}
                 onMoveComponent={handleMoveComponent}
                 onRemoveComponentClick={handleRemoveComponent(name, index)}
@@ -216,7 +216,6 @@ const DynamicZone = ({
         hasError={hasError}
         hasMaxError={hasMaxError}
         hasMinError={hasMinError}
-        isDisabled={!isFieldAllowed}
         label={metadatas.label}
         missingComponentNumber={missingComponentNumber}
         isOpen={addComponentIsOpen}
