@@ -160,16 +160,16 @@ const DynamicZone = ({
     removeComponentFromDynamicZone(name, currentIndex);
   };
 
-  if (!isFieldAllowed && (isCreatingEntry || (!isFieldReadable && !isCreatingEntry))) {
-    return (
-      <NotAllowedInput
-        description={intlDescription}
-        intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
-        labelAction={labelAction}
-        name={name}
-      />
-    );
-  }
+  // if (!isFieldAllowed && (isCreatingEntry || (!isFieldReadable && !isCreatingEntry))) {
+  //   return (
+  //     <NotAllowedInput
+  //       description={intlDescription}
+  //       intlLabel={{ id: metadatas.label, defaultMessage: metadatas.label }}
+  //       labelAction={labelAction}
+  //       name={name}
+  //     />
+  //   );
+  // }
 
   const ariaDescriptionId = `${name}-item-instructions`;
 
@@ -199,7 +199,7 @@ const DynamicZone = ({
                 formErrors={formErrors}
                 key={`${componentUid}-${id}`}
                 index={index}
-                isFieldAllowed
+                isFieldAllowed={true}
                 name={name}
                 onMoveComponent={handleMoveComponent}
                 onRemoveComponentClick={handleRemoveComponent(name, index)}
