@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { Grid, GridItem } from '@strapi/design-system/Grid';
 import Inputs from '../../../components/Inputs';
 import FieldComponent from '../../../components/FieldComponent';
+import DynamicZone from '../../../components/DynamicZone';
 
 const GridRow = ({ columns, customFieldInputs }) => {
   return (
     <Grid gap={4}>
       {columns.map(({ fieldSchema, labelAction, metadatas, name, size, queryInfos }) => {
         const isComponent = fieldSchema.type === 'component';
+        const isDynamicZone = fieldSchema.type === 'dynamiczone';
 
         if (isComponent) {
           const { component, max, min, repeatable = false, required = false } = fieldSchema;
-
           return (
             <GridItem col={size} s={12} xs={12} key={component}>
               <FieldComponent
@@ -27,6 +28,19 @@ const GridRow = ({ columns, customFieldInputs }) => {
                 min={min}
                 name={name}
                 required={required}
+              />
+            </GridItem>
+          );
+        }
+
+        if (isDynamicZone) {
+          return (
+            <GridItem col={size} s={12} xs={12} key={fieldSchema.name}>
+              <DynamicZone
+                name={name}
+                fieldSchema={fieldSchema}
+                labelAction={labelAction}
+                metadatas={metadatas}
               />
             </GridItem>
           );
