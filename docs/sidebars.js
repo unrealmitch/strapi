@@ -37,6 +37,17 @@ const sidebars = {
       items: [
         {
           type: 'category',
+          label: 'Admin',
+          items: [
+            {
+              type: 'doc',
+              label: 'Link Strapi Design System',
+              id: 'core/admin/link-strapi-design-system',
+            },
+          ],
+        },
+        {
+          type: 'category',
           label: 'Content Manager',
           link: {
             type: 'doc',
@@ -88,6 +99,43 @@ const sidebars = {
                   label: 'useFetchClient',
                   id: 'core/helper-plugin/hooks/use-fetch-client',
                 },
+
+                {
+                  type: 'doc',
+                  label: 'useAPIErrorHandler',
+                  id: 'core/helper-plugin/hooks/use-api-error-handler',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Permissions (RBAC)',
+          link: {
+            type: 'doc',
+            id: 'core/permissions/intro',
+          },
+          items: [
+            {
+              type: 'doc',
+              label: 'How Permissions Work',
+              id: 'core/permissions/how-they-work',
+            },
+            {
+              type: 'category',
+              label: 'RBAC on the frontend',
+              items: [
+                {
+                  type: 'doc',
+                  label: 'Fetching Permissions',
+                  id: 'core/permissions/frontend/fetching-permissions',
+                },
+                {
+                  type: 'doc',
+                  label: 'Using Permissions',
+                  id: 'core/permissions/frontend/using-permissions',
+                },
               ],
             },
           ],
@@ -116,6 +164,15 @@ const sidebars = {
       link: {
         type: 'doc',
         id: 'custom-fields',
+      },
+      items: [],
+    },
+    {
+      type: 'category',
+      label: 'How to install packages in a module',
+      link: {
+        type: 'doc',
+        id: 'how-to-install-packages',
       },
       items: [],
     },

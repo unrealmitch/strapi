@@ -571,6 +571,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             level_one_repeatable: [
               {
                 __temp_key__: 0,
+                level_two_single_component: {},
               },
             ],
           },
@@ -869,7 +870,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         componentsDataStructure: {},
         initialData: {},
         modifiedData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
       };
 
@@ -880,6 +881,74 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       };
 
       expect(reducer(state, action)).toEqual(expected);
+    });
+
+    it('should set a temp key every time a relation is connected', () => {
+      const state = {
+        ...initialState,
+
+        initialData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
+        },
+        modifiedData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
+        },
+      };
+
+      const nextState = reducer(state, {
+        type: 'CONNECT_RELATION',
+        keys: ['relation'],
+        value: { id: 3 },
+      });
+
+      expect(nextState).toStrictEqual({
+        ...initialState,
+        componentsDataStructure: {},
+        initialData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
+        },
+        modifiedData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+            { id: 3, __temp_key__: 'a2' },
+          ],
+        },
+      });
+
+      expect(
+        reducer(nextState, {
+          type: 'CONNECT_RELATION',
+          keys: ['relation'],
+          value: { id: 4 },
+        })
+      ).toStrictEqual({
+        ...initialState,
+        componentsDataStructure: {},
+        initialData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
+        },
+        modifiedData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+            { id: 3, __temp_key__: 'a2' },
+            { id: 4, __temp_key__: 'a3' },
+          ],
+        },
+      });
     });
 
     it('should overwrite existing data, when toOneRelation is set to true', () => {
@@ -953,10 +1022,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       expect(nextState).toStrictEqual({
         ...initialState,
         initialData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
         modifiedData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
       });
 
@@ -970,10 +1039,16 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       ).toStrictEqual({
         ...initialState,
         initialData: {
-          relation: [{ id: 2 }, { id: 1 }],
+          relation: [
+            { id: 2, __temp_key__: 'Zz' },
+            { id: 1, __temp_key__: 'a0' },
+          ],
         },
         modifiedData: {
-          relation: [{ id: 2 }, { id: 1 }],
+          relation: [
+            { id: 2, __temp_key__: 'Zz' },
+            { id: 1, __temp_key__: 'a0' },
+          ],
         },
       });
     });
@@ -1002,10 +1077,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       expect(nextState).toStrictEqual({
         ...initialState,
         initialData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
         modifiedData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
       });
 
@@ -1019,10 +1094,103 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       ).toStrictEqual({
         ...initialState,
         initialData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
         },
         modifiedData: {
-          relation: [{ id: 1 }],
+          relation: [{ id: 1, __temp_key__: 'a0' }],
+        },
+      });
+    });
+
+    it('should add a temp key for all the relations added', () => {
+      const state = {
+        ...initialState,
+        initialData: {
+          relation: [],
+        },
+        modifiedData: {
+          relation: [],
+        },
+      };
+
+      const initialDataPath = ['initialData', 'relation'];
+      const modifiedDataPath = ['modifiedData', 'relation'];
+
+      let nextState = reducer(state, {
+        type: 'LOAD_RELATION',
+        initialDataPath,
+        modifiedDataPath,
+        value: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }],
+      });
+
+      expect(nextState).toStrictEqual({
+        ...initialState,
+        initialData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+            { id: 3, __temp_key__: 'a2' },
+            { id: 4, __temp_key__: 'a3' },
+            { id: 5, __temp_key__: 'a4' },
+          ],
+        },
+        modifiedData: {
+          relation: [
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+            { id: 3, __temp_key__: 'a2' },
+            { id: 4, __temp_key__: 'a3' },
+            { id: 5, __temp_key__: 'a4' },
+          ],
+        },
+      });
+    });
+
+    it('should add a temp key working backwards on every new load because of how relations are shown in the UI', () => {
+      const state = {
+        ...initialState,
+        initialData: {
+          relation: [],
+        },
+        modifiedData: {
+          relation: [],
+        },
+      };
+
+      const initialDataPath = ['initialData', 'relation'];
+      const modifiedDataPath = ['modifiedData', 'relation'];
+
+      let nextState = reducer(state, {
+        type: 'LOAD_RELATION',
+        initialDataPath,
+        modifiedDataPath,
+        value: [{ id: 1 }, { id: 2 }],
+      });
+
+      expect(
+        reducer(nextState, {
+          type: 'LOAD_RELATION',
+          initialDataPath,
+          modifiedDataPath,
+          value: [{ id: 3 }, { id: 4 }],
+        })
+      ).toStrictEqual({
+        ...initialState,
+        initialData: {
+          relation: [
+            { id: 3, __temp_key__: 'Zy' },
+            { id: 4, __temp_key__: 'Zz' },
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
+        },
+        modifiedData: {
+          relation: [
+            { id: 3, __temp_key__: 'Zy' },
+            { id: 4, __temp_key__: 'Zz' },
+            { id: 1, __temp_key__: 'a0' },
+            { id: 2, __temp_key__: 'a1' },
+          ],
         },
       });
     });
@@ -1098,7 +1266,19 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         const action = {
           type: 'INIT_FORM',
           initialValues: { ok: true, relation: { count: 10 } },
-          relationalFieldPaths: ['relation'],
+          attributes: {
+            okay: {
+              type: 'boolean',
+            },
+            relation: {
+              type: 'relation',
+              relation: 'manyToMany',
+              target: 'api::category.category',
+              inversedBy: 'relation_locales',
+              targetModel: 'api::category.category',
+              relationType: 'manyToMany',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1141,8 +1321,38 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             relation: { count: 10 },
             component: { relation: { count: 10 } },
           },
-          relationalFieldPaths: ['relation', 'component.relation'],
-          componentPaths: ['component'],
+          components: {
+            test: {
+              attributes: {
+                relation: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            okay: {
+              type: 'boolean',
+            },
+            relation: {
+              type: 'relation',
+              relation: 'manyToMany',
+              target: 'api::category.category',
+              inversedBy: 'relation_locales',
+              targetModel: 'api::category.category',
+              relationType: 'manyToMany',
+            },
+            component: {
+              type: 'component',
+              repeatable: false,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1152,7 +1362,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "formErrors": {},
             "initialData": {
               "component": {
-                "__temp_key__": 1,
+                "__temp_key__": 0,
                 "relation": [],
               },
               "ok": true,
@@ -1161,7 +1371,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "modifiedDZName": null,
             "modifiedData": {
               "component": {
-                "__temp_key__": 1,
+                "__temp_key__": 0,
                 "relation": [],
               },
               "ok": true,
@@ -1199,8 +1409,47 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               },
             },
           },
-          relationalFieldPaths: ['relation', 'component.field1.field2'],
-          componentPaths: ['component', 'component.field1'],
+          components: {
+            test: {
+              attributes: {
+                field1: {
+                  type: 'component',
+                  repeatable: false,
+                  component: 'test2',
+                },
+              },
+            },
+            test2: {
+              attributes: {
+                field2: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            okay: {
+              type: 'boolean',
+            },
+            relation: {
+              type: 'relation',
+              relation: 'manyToMany',
+              target: 'api::category.category',
+              inversedBy: 'relation_locales',
+              targetModel: 'api::category.category',
+              relationType: 'manyToMany',
+            },
+            component: {
+              type: 'component',
+              repeatable: false,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1210,8 +1459,9 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "formErrors": {},
             "initialData": {
               "component": {
-                "__temp_key__": 1,
+                "__temp_key__": 0,
                 "field1": {
+                  "__temp_key__": 0,
                   "field2": [],
                 },
               },
@@ -1221,8 +1471,9 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "modifiedDZName": null,
             "modifiedData": {
               "component": {
-                "__temp_key__": 1,
+                "__temp_key__": 0,
                 "field1": {
+                  "__temp_key__": 0,
                   "field2": [],
                 },
               },
@@ -1267,8 +1518,33 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         const action = {
           type: 'INIT_FORM',
           initialValues,
-          relationalFieldPaths: ['repeatable_single_component_relation.categories'],
-          repeatableComponentPaths: ['repeatable_single_component_relation'],
+          components: {
+            test: {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            categories: {
+              type: 'string',
+            },
+            repeatable_single_component_relation: {
+              type: 'component',
+              repeatable: true,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1338,8 +1614,42 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         const action = {
           type: 'INIT_FORM',
           initialValues,
-          relationalFieldPaths: ['repeatable_nested_component_relation.simple.categories'],
-          repeatableComponentPaths: ['repeatable_nested_component_relation'],
+          components: {
+            test: {
+              attributes: {
+                simple: {
+                  type: 'component',
+                  repeatable: false,
+                  component: 'test2',
+                },
+              },
+            },
+            test2: {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            categories: {
+              type: 'string',
+            },
+            repeatable_nested_component_relation: {
+              type: 'component',
+              repeatable: true,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1354,6 +1664,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
                   "__temp_key__": 0,
                   "id": 2,
                   "simple": {
+                    "__temp_key__": 0,
                     "categories": [],
                     "id": 16,
                     "my_name": null,
@@ -1369,6 +1680,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
                   "__temp_key__": 0,
                   "id": 2,
                   "simple": {
+                    "__temp_key__": 0,
                     "categories": [],
                     "id": 16,
                     "my_name": null,
@@ -1418,10 +1730,42 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         const action = {
           type: 'INIT_FORM',
           initialValues,
-          relationalFieldPaths: [
-            'repeatable_repeatable_nested_component.repeatable_simple.categories',
-          ],
-          repeatableComponentPaths: ['repeatable_repeatable_nested_component'],
+          components: {
+            test: {
+              attributes: {
+                repeatable_simple: {
+                  type: 'component',
+                  repeatable: true,
+                  component: 'test2',
+                },
+              },
+            },
+            test2: {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            categories: {
+              type: 'string',
+            },
+            repeatable_repeatable_nested_component: {
+              type: 'component',
+              repeatable: true,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1504,9 +1848,42 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
         const action = {
           type: 'INIT_FORM',
           initialValues,
-          relationalFieldPaths: ['component.repeatable_simple.categories'],
-          repeatableComponentPaths: ['component.repeatable_simple'],
-          componentPaths: ['component'],
+          components: {
+            test: {
+              attributes: {
+                repeatable_simple: {
+                  type: 'component',
+                  repeatable: true,
+                  component: 'test2',
+                },
+              },
+            },
+            test2: {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            categories: {
+              type: 'string',
+            },
+            component: {
+              type: 'component',
+              repeatble: false,
+              component: 'test',
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1517,7 +1894,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "initialData": {
               "categories": "my_category",
               "component": {
-                "__temp_key__": 2,
+                "__temp_key__": 0,
                 "id": 2,
                 "repeatable_simple": [
                   {
@@ -1533,7 +1910,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             "modifiedData": {
               "categories": "my_category",
               "component": {
-                "__temp_key__": 2,
+                "__temp_key__": 0,
                 "id": 2,
                 "repeatable_simple": [
                   {
@@ -1581,8 +1958,32 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               },
             ],
           },
-          relationalFieldPaths: ['dynamic_relations.categories'],
-          dynamicZonePaths: ['dynamic_relations'],
+          components: {
+            'basic.simple': {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            ok: {
+              type: 'boolean',
+            },
+            dynamic_relations: {
+              type: 'dynamiczone',
+              components: ['basic.simple'],
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1594,7 +1995,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.simple",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "categories": [],
                   "id": 36,
                   "my_name": null,
@@ -1607,7 +2008,7 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.simple",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "categories": [],
                   "id": 36,
                   "my_name": null,
@@ -1651,8 +2052,40 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               },
             ],
           },
-          relationalFieldPaths: ['dynamic_relations.simple.categories'],
-          dynamicZonePaths: ['dynamic_relations'],
+          components: {
+            'basic.nested-simple': {
+              attributes: {
+                simple: {
+                  type: 'component',
+                  component: 'basic.simple',
+                },
+              },
+            },
+            'basic.simple': {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            ok: {
+              type: 'boolean',
+            },
+            dynamic_relations: {
+              type: 'dynamiczone',
+              components: ['basic.nested-simple'],
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1664,9 +2097,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.nested-simple",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "id": 7,
                   "simple": {
+                    "__temp_key__": 0,
                     "categories": [],
                     "id": 47,
                     "my_name": null,
@@ -1680,9 +2114,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.nested-simple",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "id": 7,
                   "simple": {
+                    "__temp_key__": 0,
                     "categories": [],
                     "id": 47,
                     "my_name": null,
@@ -1740,8 +2175,41 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               },
             ],
           },
-          relationalFieldPaths: ['dynamic_relations.repeatable_simple.categories'],
-          dynamicZonePaths: ['dynamic_relations'],
+          components: {
+            'basic.repeatable-repeatble-relation': {
+              attributes: {
+                repeatable_simple: {
+                  type: 'component',
+                  component: 'basic.simple',
+                  repeatable: true,
+                },
+              },
+            },
+            'basic.simple': {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                  relation: 'manyToMany',
+                  target: 'api::category.category',
+                  inversedBy: 'relation_locales',
+                  targetModel: 'api::category.category',
+                  relationType: 'manyToMany',
+                },
+              },
+            },
+          },
+          attributes: {
+            ok: {
+              type: 'boolean',
+            },
+            dynamic_relations: {
+              type: 'dynamiczone',
+              components: ['basic.repeatable-repeatble-relation'],
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1828,17 +2296,71 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
                   {
                     id: 48,
                     my_name: null,
+                    categories: {
+                      count: 0,
+                    },
                   },
                   {
                     id: 49,
                     my_name: null,
+                    categories: {
+                      count: 0,
+                    },
+                  },
+                ],
+              },
+              {
+                __component: 'basic.repeatable-repeatble-relation',
+                id: 6,
+                repeatable_simple: [
+                  {
+                    id: 48,
+                    my_name: null,
+                    categories: {
+                      count: 0,
+                    },
+                  },
+                  {
+                    id: 49,
+                    my_name: null,
+                    categories: {
+                      count: 0,
+                    },
                   },
                 ],
               },
             ],
           },
-          relationalFieldPaths: ['dynamic_relations.repeatable_simple.categories'],
-          dynamicZonePaths: ['dynamic_relations'],
+          components: {
+            'basic.repeatable-repeatble-relation': {
+              attributes: {
+                repeatable_simple: {
+                  type: 'component',
+                  component: 'basic.simple',
+                  repeatable: true,
+                },
+              },
+            },
+            'basic.simple': {
+              attributes: {
+                my_name: {
+                  type: 'string',
+                },
+                categories: {
+                  type: 'relation',
+                },
+              },
+            },
+          },
+          attributes: {
+            ok: {
+              type: 'boolean',
+            },
+            dynamic_relations: {
+              type: 'dynamiczone',
+              components: ['basic.repeatable-repeatble-relation'],
+            },
+          },
         };
 
         expect(reducer(state, action)).toMatchInlineSnapshot(`
@@ -1850,8 +2372,25 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.repeatable-repeatble-relation",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "id": 5,
+                  "repeatable_simple": [
+                    {
+                      "categories": [],
+                      "id": 48,
+                      "my_name": null,
+                    },
+                    {
+                      "categories": [],
+                      "id": 49,
+                      "my_name": null,
+                    },
+                  ],
+                },
+                {
+                  "__component": "basic.repeatable-repeatble-relation",
+                  "__temp_key__": 1,
+                  "id": 6,
                   "repeatable_simple": [
                     {
                       "categories": [],
@@ -1873,8 +2412,25 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
               "dynamic_relations": [
                 {
                   "__component": "basic.repeatable-repeatble-relation",
-                  "__temp_key__": 1,
+                  "__temp_key__": 0,
                   "id": 5,
+                  "repeatable_simple": [
+                    {
+                      "categories": [],
+                      "id": 48,
+                      "my_name": null,
+                    },
+                    {
+                      "categories": [],
+                      "id": 49,
+                      "my_name": null,
+                    },
+                  ],
+                },
+                {
+                  "__component": "basic.repeatable-repeatble-relation",
+                  "__temp_key__": 1,
+                  "id": 6,
                   "repeatable_simple": [
                     {
                       "categories": [],
@@ -1939,8 +2495,30 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
             },
           },
         },
-        relationalFieldPaths: ['relation', 'componentWithRelation.relation'],
-        componentPaths: ['componentWithRelation'],
+        components: {
+          test: {
+            attributes: {
+              id: {
+                type: 'number',
+              },
+              relation: {
+                type: 'relation',
+              },
+            },
+          },
+        },
+        attributes: {
+          ok: {
+            type: 'boolean',
+          },
+          relation: {
+            type: 'relation',
+          },
+          componentWithRelation: {
+            type: 'component',
+            component: 'test',
+          },
+        },
       };
 
       const newState = reducer(state, action);
@@ -1950,9 +2528,33 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       });
 
       expect(newState.modifiedData.componentWithRelation).toEqual({
+        __temp_key__: 0,
         id: 1,
         relation: expect.arrayContaining([{ id: expect.any(Number) }]),
       });
+
+      expect(newState.modifiedData).toMatchInlineSnapshot(`
+        {
+          "componentWithRelation": {
+            "__temp_key__": 0,
+            "id": 1,
+            "relation": [
+              {
+                "id": 1,
+              },
+              {
+                "id": 2,
+              },
+            ],
+          },
+          "ok": true,
+          "relation": [
+            {
+              "id": 1,
+            },
+          ],
+        }
+      `);
     });
   });
 
@@ -2397,10 +2999,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
           field1: {
             field2: {
               relation: [
-                { name: 'first' },
-                { name: 'second' },
-                { name: 'third' },
-                { name: 'fourth' },
+                { name: 'first', __temp_key__: 'a0' },
+                { name: 'second', __temp_key__: 'a1' },
+                { name: 'third', __temp_key__: 'a2' },
+                { name: 'fourth', __temp_key__: 'a3' },
               ],
             },
           },
@@ -2421,10 +3023,10 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
           field1: {
             field2: {
               relation: [
-                { name: 'first' },
-                { name: 'fourth' },
-                { name: 'second' },
-                { name: 'third' },
+                { name: 'first', __temp_key__: 'a0' },
+                { name: 'fourth', __temp_key__: 'a0V' },
+                { name: 'second', __temp_key__: 'a1' },
+                { name: 'third', __temp_key__: 'a2' },
               ],
             },
           },
@@ -2432,6 +3034,89 @@ describe('CONTENT MANAGER | COMPONENTS | EditViewDataManagerProvider | reducer',
       };
 
       expect(reducer(state, action)).toEqual(expected);
+    });
+
+    it('should move many components many times and have the correct temp keys', () => {
+      const state = {
+        ...initialState,
+        modifiedData: {
+          relation: [
+            { name: 'first', __temp_key__: 'a0' },
+            { name: 'second', __temp_key__: 'a1' },
+            { name: 'third', __temp_key__: 'a2' },
+            { name: 'fourth', __temp_key__: 'a3' },
+          ],
+        },
+      };
+
+      const generateAction = (newIndex, oldIndex) => ({
+        type: 'REORDER_RELATION',
+        newIndex,
+        oldIndex,
+        keys: ['relation'],
+      });
+
+      const generateExpected = (relation = []) => ({
+        ...initialState,
+        modifiedData: {
+          relation,
+        },
+      });
+
+      const nextState1 = reducer(state, generateAction(1, 3));
+
+      expect(nextState1).toEqual(
+        generateExpected([
+          { name: 'first', __temp_key__: 'a0' },
+          { name: 'fourth', __temp_key__: 'a0V' },
+          { name: 'second', __temp_key__: 'a1' },
+          { name: 'third', __temp_key__: 'a2' },
+        ])
+      );
+
+      const nextState2 = reducer(nextState1, generateAction(1, 2));
+
+      expect(nextState2).toEqual(
+        generateExpected([
+          { name: 'first', __temp_key__: 'a0' },
+          { name: 'second', __temp_key__: 'a0G' },
+          { name: 'fourth', __temp_key__: 'a0V' },
+          { name: 'third', __temp_key__: 'a2' },
+        ])
+      );
+
+      const nextState3 = reducer(nextState2, generateAction(0, 3));
+
+      expect(nextState3).toEqual(
+        generateExpected([
+          { name: 'third', __temp_key__: 'Zz' },
+          { name: 'first', __temp_key__: 'a0' },
+          { name: 'second', __temp_key__: 'a0G' },
+          { name: 'fourth', __temp_key__: 'a0V' },
+        ])
+      );
+
+      const nextState4 = reducer(nextState3, generateAction(3, 1));
+
+      expect(nextState4).toEqual(
+        generateExpected([
+          { name: 'third', __temp_key__: 'Zz' },
+          { name: 'second', __temp_key__: 'a0G' },
+          { name: 'fourth', __temp_key__: 'a0V' },
+          { name: 'first', __temp_key__: 'a0O' },
+        ])
+      );
+
+      const nextState5 = reducer(nextState4, generateAction(1, 2));
+
+      expect(nextState5).toEqual(
+        generateExpected([
+          { name: 'third', __temp_key__: 'Zz' },
+          { name: 'fourth', __temp_key__: 'a0' },
+          { name: 'second', __temp_key__: 'a0G' },
+          { name: 'first', __temp_key__: 'a0O' },
+        ])
+      );
     });
   });
 
